@@ -1,26 +1,35 @@
 function convertingToInfix(arr) {
-    if (Array.isArray(arr)) {
-        if (arr.length >= 2)
-            [arr[0], arr[1]] = [arr[1], arr[0]];
-        for (let i = 0; i < arr.length; i++)
-            convertingToInfix(arr[i]);
+    let arrayCopy = JSON.parse(JSON.stringify(arr));
+    function helper(arrayCopy) {
+        if (Array.isArray(arrayCopy)) {
+            if (arrayCopy.length >= 2)
+                [arrayCopy[0], arrayCopy[1]] = [arrayCopy[1], arrayCopy[0]];
+            for (let i = 0; i < arrayCopy.length; i++)
+                helper(arrayCopy[i]);
+        }
     }
+    helper(arrayCopy)
+    return arrayCopy
 }
 
-function convertingToString(arr, out, count){
-    if(Array.isArray(arr)){
-        if(Array.isArray(arr[0]) && count > 0)
-            out.str += '('
-        for(let i = 0; i < arr.length; i++)
-            Array.isArray(arr[i])? convertingToString(arr[i], out, count + 1): out.str += arr[i];
-        if(Array.isArray(arr[0]) && count > 0)
-            out.str += ')'
+function convertingToString(arr) {
+    let count = 0;
+    const out = { str: "" }
+    function helper(arr, out, count) {
+        if (Array.isArray(arr)) {
+            if (Array.isArray(arr[0]) && count > 0)
+                out.str += '('
+            for (let i = 0; i < arr.length; i++)
+                Array.isArray(arr[i]) ? helper(arr[i], out, count + 1) : out.str += arr[i];
+            if (Array.isArray(arr[0]) && count > 0)
+                out.str += ')'
+        }
     }
+    helper(arr, out, count);
+    return out.str
 }
 
 const array = ['OR', ['<', 'a', 'b'], ['AND', ['==', 'c', 'd'], ['!=', 'e', 'f']]];
-convertingToInfix(array);
-const output = { str : "" }
-let count = 0;
-convertingToString(array, output, count)
-console.log(output.str)
+let infixArray = convertingToInfix(array);
+const output = convertingToString(infixArray)
+console.log(output)
