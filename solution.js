@@ -1,35 +1,36 @@
-function convertingToInfix(arr) {
-    let arrayCopy = JSON.parse(JSON.stringify(arr));
-    function helper(arrayCopy) {
-        if (Array.isArray(arrayCopy)) {
-            if (arrayCopy.length >= 2)
-                [arrayCopy[0], arrayCopy[1]] = [arrayCopy[1], arrayCopy[0]];
-            for (let i = 0; i < arrayCopy.length; i++)
-                helper(arrayCopy[i]);
+function recursivePostfixToInfix(arr) {
+    function helper(arr) {
+        if (!Array.isArray(arr)) {
+            return arr.toString()
         }
+        return (Array.isArray(arr[1]) || Array.isArray(arr[2]) ? "(" : "") + helper(arr[1]) + helper(arr[0]) + helper(arr[2]) + (Array.isArray(arr[1]) || Array.isArray(arr[2]) ? ")" : "")
     }
-    helper(arrayCopy)
-    return arrayCopy
+    return helper(arr).slice(1, -1);
 }
 
-function convertingToString(arr) {
-    let count = 0;
-    const out = { str: "" }
-    function helper(arr, out, count) {
-        if (Array.isArray(arr)) {
-            if (Array.isArray(arr[0]) && count > 0)
-                out.str += '('
-            for (let i = 0; i < arr.length; i++)
-                Array.isArray(arr[i]) ? helper(arr[i], out, count + 1) : out.str += arr[i];
-            if (Array.isArray(arr[0]) && count > 0)
-                out.str += ')'
+function iterativePostfixToInfix(arr) {
+    let str = ""
+    const stack = [arr]
+    while (stack.length) {
+        let item = stack.pop()
+        if (!Array.isArray(item)) {
+            str += item
+        }
+        else {
+            if (Array.isArray(item[1]) || Array.isArray(item[2])) {
+                item.unshift('(')
+                item.push(')')
+                stack.push(item[4], item[3], item[1], item[2], item[0])
+            }
+            else {
+                stack.push(item[2], item[0], item[1])
+            }
         }
     }
-    helper(arr, out, count);
-    return out.str
-}
 
+    return str.slice(1, -1);
+}
 const array = ['OR', ['<', 'a', 'b'], ['AND', ['==', 'c', 'd'], ['!=', 'e', 'f']]];
-let infixArray = convertingToInfix(array);
-const output = convertingToString(infixArray)
+
+const output = recursivePostfixToInfix(array)
 console.log(output)
